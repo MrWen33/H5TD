@@ -1,0 +1,31 @@
+/* 塔升级菜单修复样式 */
+.tower-upgrade-menu {
+    width: 200px !important;
+    padding: 12px !important;
+    font-family: 'Microsoft YaHei', sans-serif !important;
+}
+
+.tower-name {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+    font-size: 1rem !important;
+}
+
+.tower-stats {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.tower-stats div {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    padding: 2px 0 !important;
+}
+
+.upgrade-button, .sell-button {
+    max-width: 90px !important;
+    margin: 0 3px !important;
+}

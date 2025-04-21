@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>emoji塔防游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tower-menu-fix.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="resources">💰 <span id="money">100</span></div>
+            <div class="lives">❤️ <span id="lives">10</span></div>
+            <div class="wave">🌊 第 <span id="wave">1</span> 波</div>
+        </div>
+        
+        <div class="game-content">
+            <div class="game-map" id="game-map">
+                <!-- 游戏地图将在JS中动态生成 -->
+            </div>
+            
+            <div class="score-panel">
+                <div class="score-title">游戏数据</div>
+                <div class="score-item">
+                    <div class="score-label">当前得分</div>
+                    <div class="score-value" id="current-score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">最高得分</div>
+                    <div class="score-value" id="high-score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">击杀敌人</div>
+                    <div class="score-value" id="enemies-killed">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">建造塔数</div>
+                    <div class="score-value" id="towers-built">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">游戏时间</div>
+                    <div class="score-value" id="game-time">00:00</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tower-selection">
+            <div class="tower-option" data-tower="archer" data-cost="50">
+                <div class="tower-icon">🏹</div>
+                <div class="tower-cost">50💰</div>
+            </div>
+            <div class="tower-option" data-tower="magic" data-cost="100">
+                <div class="tower-icon">🧙</div>
+                <div class="tower-cost">100💰</div>
+            </div>
+            <div class="tower-option" data-tower="cannon" data-cost="150">
+                <div class="tower-icon">💣</div>
+                <div class="tower-cost">150💰</div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button id="start-wave">开始波次</button>
+            <button id="speed-toggle">加速</button>
+        </div>
+    </div>
+
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2>游戏结束</h2>
+            <p>你坚持到了第 <span id="final-wave">0</span> 波</p>
+            <button id="restart-game">重新开始</button>
+        </div>
+    </div>
+
+    <div class="modal" id="level-complete-modal">
+        <div class="modal-content">
+            <h2>恭喜通关!</h2>
+            <p>你成功击退了所有敌人!</p>
+            <button id="restart-game-win">再玩一次</button>
+        </div>
+    </div>
+
+    <!-- 工具类 -->
+    <script src="js/utils/utils.js"></script>
+    
+    <!-- 核心文件 -->
+    <script src="js/core/config.js"></script>
+    
+    <!-- 实体类 -->
+    <script src="js/entities/enemy.js"></script>
+    <script src="js/entities/tower.js"></script>
+    
+    <!-- 管理器 -->
+    <script src="js/managers/mapManager.js"></script>
+    <script src="js/managers/enemyManager.js"></script>
+    <script src="js/managers/towerManager.js"></script>
+    <script src="js/managers/waveManager.js"></script>
+    <script src="js/managers/uiManager.js"></script>
+    
+    <!-- 游戏主文件 -->
+    <script src="js/game.js"></script>
+</body>
+</html>
