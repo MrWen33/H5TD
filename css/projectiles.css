@@ -1,0 +1,142 @@
+/**
+ * 子弹样式
+ */
+
+/* 基础子弹样式 */
+.projectile {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+}
+
+/* 弓箭手子弹 */
+.archer-projectile {
+    width: 12px;
+    height: 4px;
+    background-color: #795548;
+    border-radius: 0;
+    transform-origin: center;
+}
+
+/* 法师子弹 */
+.magic-projectile {
+    background-color: #3f51b5;
+    box-shadow: 0 0 5px #3f51b5;
+    animation: magic-pulse 0.5s infinite alternate;
+}
+
+/* 炮手子弹 */
+.cannon-projectile {
+    background-color: #333;
+    width: 14px;
+    height: 14px;
+}
+
+/* 冰球子弹 */
+.ice-projectile {
+    background-color: #87CEFA;
+    box-shadow: 0 0 5px #87CEFA;
+    animation: ice-pulse 0.5s infinite alternate;
+}
+
+/* 爆炸效果 */
+.explosion {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 87, 34, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    animation: explosion 0.5s ease-out;
+}
+
+/* 法师命中效果 */
+.magic-hit-effect {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: rgba(63, 81, 181, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    animation: magic-hit 0.3s ease-out;
+}
+
+/* 冰冻效果 */
+.freeze-effect {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(135, 206, 250, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    animation: freeze-pulse 0.8s ease-out;
+    pointer-events: none;
+}
+
+/* 爆炸动画 */
+@keyframes explosion {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* 法师命中动画 */
+@keyframes magic-hit {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* 法师子弹脉冲动画 */
+@keyframes magic-pulse {
+    0% {
+        box-shadow: 0 0 5px #3f51b5;
+    }
+    100% {
+        box-shadow: 0 0 10px #3f51b5;
+    }
+}
+
+/* 冰球子弹脉冲动画 */
+@keyframes ice-pulse {
+    0% {
+        box-shadow: 0 0 5px #87CEFA;
+    }
+    100% {
+        box-shadow: 0 0 10px #87CEFA;
+    }
+}
+
+/* 冰冻效果脉冲动画 */
+@keyframes freeze-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.8;
+        border: 2px solid rgba(135, 206, 250, 0.8);
+    }
+    50% {
+        opacity: 0.5;
+        border: 1px solid rgba(135, 206, 250, 0.6);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+        border: 0px solid rgba(135, 206, 250, 0.1);
+    }
+}

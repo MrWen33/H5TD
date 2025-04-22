@@ -44,6 +44,9 @@ class Enemy {
         this.slowFactor = 1.0;
         this.slowDuration = 0;
         
+        // 效果系统
+        this.effects = []; // 当前所有效果的数组
+        
         // 创建DOM元素
         this.element = document.createElement('div');
         this.element.className = 'enemy';
@@ -90,21 +93,20 @@ class Enemy {
     
     // 更新敌人
     update(deltaTime) {
-        // 如果敌人已死亡或到达终点，不更新
-        if (this.isDead || this.reachedEnd) {
-            return;
-        }
+        if (this.isDead || this.reachedEnd) return;
         
-        // 处理减速效果
-        if (this.isSlowed) {
-            this.slowDuration -= deltaTime;
-            if (this.slowDuration <= 0) {
-                this.isSlowed = false;
-                this.slowFactor = 1.0;
-                this.element.style.filter = this.isBoss ? 'drop-shadow(0 0 5px red)' : '';
-            }
-        }
+        // 更新效果
+        this.updateEffects(deltaTime);
         
+        // 更新位置
+        this.updatePosition(deltaTime);
+        
+        // 更新元素位置
+        this.updateElementPosition();
+    }
+    
+    // 更新位置
+    updatePosition(deltaTime) {
         // 计算实际速度
         const actualSpeed = this.speed * this.slowFactor;
         
@@ -180,22 +182,9 @@ class Enemy {
             // 线性插值计算当前位置
             this.position.x = currentPathPoint.x + (nextPathPoint.x - currentPathPoint.x) * this.progress;
             this.position.y = currentPathPoint.y + (nextPathPoint.y - currentPathPoint.y) * this.progress;
-            
-            // 更新DOM元素位置
-            this.updateElementPosition();
         }
-    }
-    
-    // 更新位置
-    updatePosition() {
-        const point = MapManager.getPathPoint(this.pathIndex);
-        if (point) {
-            this.position.x = point.x;
-            this.position.y = point.y;
-            
-            // 使用统一的元素位置更新方法
-            this.updateElementPosition();
-        }
+
+
     }
     
     // 受到伤害
@@ -264,14 +253,123 @@ class Enemy {
         }, 1000);
     }
     
-    // 减速敌人
-    slow(factor, duration) {
-        this.isSlowed = true;
-        this.slowFactor = factor;
-        this.slowDuration = duration;
+    /**
+     * 添加效果到敌人
+     * @param {Object} effectData - 效果数据
+     * @param {string} effectData.type - 效果类型 ('burn', 'freeze', 'poison', 等)
+     * @param {number} effectData.duration - 持续时间（秒）
+     * @param {number} [effectData.damage] - 每次伤害（对于伤害效果）
+     * @param {number} [effectData.interval] - 触发间隔（秒，对于周期性效果）
+     * @param {number} [effectData.slowFactor] - 减速因子（对于减速效果）
+     * @param {Object} [effectData.source] - 效果来源（塔或子弹）
+     */
+    addEffect(effectData) {
+        console.log('敌人收到效果请求：', effectData);
         
-        // 添加视觉效果
-        this.element.style.filter = 'brightness(0.7) sepia(1) hue-rotate(180deg)';
+        // 检查效果数据是否完整
+        if (!effectData || !effectData.type || !effectData.duration) {
+            console.error('效果数据不完整：', effectData);
+            return;
+        }
+        
+        // 检查effectManager是否存在
+        if (typeof effectManager === 'undefined') {
+            console.error('效果管理器不存在！');
+            return;
+        }
+        
+        // 使用效果管理器添加效果
+        try {
+            const effect = effectManager.applyEffect(effectData.type, this, {
+                duration: effectData.duration,
+                damage: effectData.damage,
+                interval: effectData.interval,
+                slowFactor: effectData.slowFactor,
+                source: effectData.source
+            });
+            console.log('效果已添加：', effect);
+        } catch (error) {
+            console.error('添加效果时出错：', error);
+        }
+    }
+    
+    /**
+     * 更新所有效果
+     * @param {number} deltaTime - 时间增量（秒）
+     */
+    updateEffects(deltaTime) {
+        if (!this.effects || this.effects.length === 0) return;
+        
+        // 重置减速状态
+        this.isSlowed = false;
+        this.slowFactor = 1.0;
+        
+        // 记录需要移除的效果
+        const effectsToRemove = [];
+        
+        // 更新每个效果
+        for (let i = 0; i < this.effects.length; i++) {
+            const effect = this.effects[i];
+            
+            // 更新效果并检查是否还有效
+            const isEffectActive = effect.update(deltaTime);
+            
+            // 如果效果已过期，添加到移除列表
+            if (!isEffectActive) {
+                effectsToRemove.push(i);
+            }
+        }
+        
+        // 从数组中移除过期的效果（从后向前移除，避免索引变化）
+        for (let i = effectsToRemove.length - 1; i >= 0; i--) {
+            this.effects.splice(effectsToRemove[i], 1);
+        }
+        
+        // 如果所有效果都已移除，重置视觉效果
+        if (this.effects.length === 0) {
+            effectManager.updateTargetVisualEffects(this);
+        }
+    }
+    
+    /**
+     * 更新敌人的视觉效果（基于当前效果）
+     * @deprecated 使用 effectManager.updateTargetVisualEffects 代替
+     */
+    updateVisualEffects() {
+        effectManager.updateTargetVisualEffects(this);
+    }
+    
+    /**
+     * 显示效果图标
+     * @param {string} effectType - 效果类型
+     * @deprecated 效果类现在自己处理图标显示
+     */
+    showEffectIcon(effectType) {
+        // 这个方法保留仅为了兼容性，不再使用
+    }
+    
+    /**
+     * 显示效果文本（如伤害数字）
+     * @param {number} value - 显示的数值
+     * @param {string} effectType - 效果类型
+     * @deprecated 效果类现在自己处理文本显示
+     */
+    showEffectText(value, effectType) {
+        // 这个方法保留仅为了兼容性，不再使用
+    }
+    
+    /**
+     * 减速敌人 (兼容旧的减速系统)
+     * @param {number} factor - 减速因子
+     * @param {number} duration - 持续时间
+     */
+    slow(factor, duration) {
+        // 使用新的效果系统
+        this.addEffect({
+            type: 'freeze',
+            duration: duration,
+            slowFactor: factor
+        });
     }
     
     // 死亡

@@ -1,0 +1,291 @@
+/**
+ * 子弹槽系统样式
+ */
+
+/* 子弹槽容器 */
+.bullet-slots-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 30;
+}
+
+/* 子弹槽 */
+.bullet-slot {
+    width: 30px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bullet-slot:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* 空槽位 */
+.empty-slot {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 子弹图标 */
+.bullet-icon {
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 子弹属性标签 */
+.bullet-stat {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bullet-stat.damage {
+    background-color: #F44336;
+}
+
+/* 子弹选项样式 - 用于整合界面 */
+.bullet-option {
+    width: 35px;
+    height: 35px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    margin: 2px;
+}
+
+.bullet-option:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.bullet-option-icon {
+    font-size: 18px;
+}
+
+.bullet-option-cost {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bullet-option-name {
+    font-size: 10px;
+    color: white;
+    margin-top: 2px;
+}
+
+/* 关闭按钮样式 */
+.bullet-selection-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.bullet-selection-close:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
+/* 塔菜单 */
+.tower-menu {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 50;
+    min-width: 200px;
+}
+
+/* 整合界面的塔菜单 */
+.tower-menu.integrated {
+    min-width: 250px;
+    max-width: 300px;
+}
+
+.tower-menu-title {
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 5px;
+}
+
+.tower-menu-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.tower-menu-stat {
+    color: white;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tower-menu-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.tower-menu-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tower-menu-button.sell {
+    background-color: #F44336;
+    color: white;
+}
+
+.tower-menu-button.sell:hover {
+    background-color: #D32F2F;
+}
+
+.tower-menu-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.tower-menu-close:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
+/* 整合界面中的子弹编辑区域 */
+.bullet-edit-section {
+    margin-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 10px;
+}
+
+.bullet-edit-title {
+    color: white;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* 整合界面中的子弹槽容器 */
+.bullet-slots-container-ui {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+/* 整合界面中的子弹槽 */
+.bullet-slot-ui {
+    width: 35px;
+    height: 35px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bullet-slot-ui:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* 整合界面中的子弹选择菜单 */
+.bullet-selection-menu-integrated {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 15px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+    max-width: 250px;
+}
+
+/* 子弹选项容器 */
+.bullet-options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}

@@ -12,15 +12,10 @@ class Tower {
         this.id = Utils.generateId();
         this.emoji = type.emoji;
         this.name = type.name;
-        this.damage = type.damage;
         this.range = type.range;
         this.attackSpeed = type.attackSpeed;
         this.cost = type.cost;
-        this.projectileType = type.projectile;
-        this.projectileSpeed = type.projectileSpeed;
-        this.splashRadius = type.splashRadius || 0;
-        this.upgradeLevel = type.upgradeLevel || 0;
-        this.upgrades = type.upgrades || [];
+        this.projectileSpeed = type.projectileSpeed || 300;
         
         // 记录总投资金额（初始建造成本）
         this.totalInvestment = type.cost;
@@ -40,7 +35,7 @@ class Tower {
         
         // 创建DOM元素
         this.element = document.createElement('div');
-        this.element.className = `tower tower-${this.type.id} tower-level-${this.upgradeLevel}`;
+        this.element.className = `tower tower-${this.type.id}`;
         this.element.textContent = this.emoji;
         this.element.style.left = `${x * Config.map.cellSize}px`;
         this.element.style.top = `${y * Config.map.cellSize}px`;
@@ -48,11 +43,19 @@ class Tower {
         // 添加点击事件
         this.element.addEventListener('click', (event) => {
             event.stopPropagation();
-            this.showUpgradeMenu();
+            this.showBulletSlotsMenu();
         });
         
         // 添加到游戏地图
         document.getElementById('game-map').appendChild(this.element);
+        
+        // 创建子弹槽管理器
+        this.bulletSlotManager = new BulletSlotManager(this);
+        // 使用配置文件中的slotCount属性初始化槽位数量
+        const slotCount = this.type.slotCount || 4; // 默认为4个槽位
+        console.log(`初始化塔的子弹槽数量: ${slotCount}`);
+        this.bulletSlotManager.initializeSlots(slotCount);
+        this.bulletSlotManager.setVisible(false); // 初始时隐藏子弹槽显示
         
         // 显示范围指示器
         this.showRangeIndicator();
@@ -114,11 +117,10 @@ class Tower {
     
     // 攻击目标
     attack() {
-        // 重置冷却时间
-        this.attackCooldown = 1 / this.attackSpeed;
+        // 记录攻击时间
         this.lastAttackTime = performance.now();
         
-        // 创建投射物
+        // 创建投射物（冷却时间将在createProjectile方法中设置）
         this.createProjectile();
     }
     
@@ -129,110 +131,39 @@ class Tower {
             return;
         }
         
-        // 创建投射物
-        const projectile = document.createElement('div');
-        projectile.className = `projectile ${this.projectileType}`;
+        // 获取下一个要发射的子弹槽
+        const nextSlot = this.bulletSlotManager.getNextSlot();
         
-        // 设置投射物初始位置
-        projectile.style.left = `${this.position.x - 5}px`;
-        projectile.style.top = `${this.position.y - 5}px`;
-        
-        // 添加到游戏地图
-        document.getElementById('game-map').appendChild(projectile);
-        
-        // 计算目标位置
-        const targetX = this.target.position.x * Config.map.cellSize + Config.map.cellSize / 2;
-        const targetY = this.target.position.y * Config.map.cellSize + Config.map.cellSize / 2;
-        
-        // 计算方向
-        const dx = targetX - this.position.x;
-        const dy = targetY - this.position.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // 计算飞行时间
-        const flightTime = distance / this.projectileSpeed;
-        
-        // 设置投射物动画
-        projectile.style.transition = `left ${flightTime}s linear, top ${flightTime}s linear`;
-        
-        // 延迟一帧，确保transition生效
-        setTimeout(() => {
-            projectile.style.left = `${targetX - 5}px`;
-            projectile.style.top = `${targetY - 5}px`;
-        }, 16);
-        
-        // 投射物到达目标
-        setTimeout(() => {
-            // 移除投射物
-            if (projectile.parentNode) {
-                projectile.parentNode.removeChild(projectile);
-            }
-            
-            // 如果目标还活着，造成伤害
-            if (this.target && !this.target.isDead && !this.target.reachedEnd) {
-                // 如果是溅射伤害
-                if (this.splashRadius > 0) {
-                    this.dealSplashDamage();
-                } else {
-                    // 单体伤害
-                    this.target.takeDamage(this.damage);
-                    
-                    // 如果是法师塔，有几率减速敌人
-                    if (this.type.id === 'magic' && Math.random() < 0.3) {
-                        this.target.slow(0.5, 2); // 减速50%，持续2秒
-                    }
-                }
-            }
-        }, flightTime * 1000);
-    }
-    
-    // 造成溅射伤害
-    dealSplashDamage() {
-        // 如果目标已死亡或到达终点，不造成伤害
-        if (!this.target || this.target.isDead || this.target.reachedEnd) {
+        // 如果没有可用的子弹槽，不发射
+        if (!nextSlot) {
             return;
         }
         
-        // 创建爆炸效果
-        const explosion = document.createElement('div');
-        explosion.className = 'explosion';
-        explosion.style.left = `${this.target.position.x * Config.map.cellSize + Config.map.cellSize / 2 - 20}px`;
-        explosion.style.top = `${this.target.position.y * Config.map.cellSize + Config.map.cellSize / 2 - 20}px`;
+        // 获取子弹选项
+        const bulletOptions = nextSlot.getBulletOptions();
         
-        // 添加到游戏地图
-        document.getElementById('game-map').appendChild(explosion);
+        // 设置子弹速度
+        bulletOptions.speed = this.projectileSpeed;
         
-        // 一秒后移除爆炸效果
-        setTimeout(() => {
-            if (explosion.parentNode) {
-                explosion.parentNode.removeChild(explosion);
-            }
-        }, 500);
-        
-        // 对目标造成全额伤害
-        this.target.takeDamage(this.damage);
-        
-        // 获取所有敌人
-        const enemies = EnemyManager.getEnemies();
-        
-        // 对范围内的其他敌人造成伤害
-        for (const enemy of enemies) {
-            if (enemy !== this.target && !enemy.isDead && !enemy.reachedEnd) {
-                const dx = (enemy.position.x - this.target.position.x) * Config.map.cellSize;
-                const dy = (enemy.position.y - this.target.position.y) * Config.map.cellSize;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                // 如果在溅射范围内
-                if (distance <= this.splashRadius) {
-                    // 根据距离计算伤害衰减
-                    const damageFactor = 1 - distance / this.splashRadius;
-                    const splashDamage = Math.floor(this.damage * damageFactor);
-                    
-                    // 造成伤害
-                    enemy.takeDamage(splashDamage);
-                }
-            }
-        }
+       
+        // 使用子弹管理器创建子弹
+        const projectile = projectileManager.createProjectile(
+            bulletOptions.type,
+            this,
+            this.target,
+            bulletOptions
+        );
+
+         // 在发射子弹后设置塔的冷却时间
+        const cooldown = projectile.cooldown;
+        this.attackCooldown = cooldown;
+        console.log(`发射子弹，设置塔的冷却时间为 ${cooldown} 秒`);
+    }
+    
+    // 造成溅射伤害 - 这个方法现在已经被移到CannonProjectile类中，保留此方法仅为了兼容性
+    dealSplashDamage() {
+        console.warn('Tower.dealSplashDamage方法已被弃用，请使用CannonProjectile类');
+        // 该功能已移至CannonProjectile类
     }
     
     // 显示范围指示器
@@ -269,71 +200,66 @@ class Tower {
         }
     }
     
-    // 显示升级菜单
-    showUpgradeMenu() {
+    // 显示子弹槽菜单
+    showBulletSlotsMenu() {
         // 隐藏其他塔的范围
         TowerManager.hideAllRanges();
+        
+        // 隐藏所有其他菜单
+        UIManager.hideAllMenus();
         
         // 显示当前塔的范围
         this.showRange();
         
-        // 通知UI管理器显示升级菜单
-        UIManager.showTowerUpgradeMenu(this);
+        // 通知UI管理器显示塔的菜单
+        UIManager.showTowerMenu(this);
     }
     
-    // 升级塔
-    upgrade() {
-        // 检查是否有可用升级
-        if (this.upgradeLevel >= this.upgrades.length) {
-            console.log('已达到最高等级');
+    // 添加子弹到槽位
+    addBulletToSlot(slotIndex, bulletType, bulletOptions) {
+        // 获取槽位
+        const slot = this.bulletSlotManager.getSlot(slotIndex);
+        if (!slot) {
+            console.log(`槽位 ${slotIndex} 不存在`);
             return false;
         }
         
-        // 获取升级信息
-        const upgrade = this.upgrades[this.upgradeLevel];
-        
         // 检查金钱是否足够
-        if (Game.state.money < upgrade.cost) {
+        const bulletCost = bulletOptions.cost || 0;
+        if (Game.state.money < bulletCost) {
             console.log('金钱不足');
             return false;
         }
         
         // 扣除金钱
-        Game.state.money -= upgrade.cost;
+        Game.state.money -= bulletCost;
         
         // 更新总投资金额
-        this.totalInvestment += upgrade.cost;
+        this.totalInvestment += bulletCost;
         
-        // 应用升级
-        this.damage = upgrade.damage;
-        this.range = upgrade.range;
-        this.attackSpeed = upgrade.attackSpeed;
+        // 设置子弹
+        slot.setBulletType(bulletType, bulletOptions);
         
-        // 如果有泼射半径，也升级
-        if (upgrade.splashRadius) {
-            this.splashRadius = upgrade.splashRadius;
-        }
-        
-        // 增加等级
-        this.upgradeLevel++;
-        
-        // 更新塔的视觉效果
-        this.element.classList.remove(`tower-level-${this.upgradeLevel - 1}`);
-        this.element.classList.add(`tower-level-${this.upgradeLevel}`);
-        
-        // 更新范围指示器
-        if (this.rangeIndicator) {
-            this.rangeIndicator.style.left = `${this.position.x - this.range}px`;
-            this.rangeIndicator.style.top = `${this.position.y - this.range}px`;
-            this.rangeIndicator.style.width = `${this.range * 2}px`;
-            this.rangeIndicator.style.height = `${this.range * 2}px`;
-        }
-        
-        // 添加升级效果
+        // 添加效果
         this.element.classList.add('upgraded');
         setTimeout(() => {
             this.element.classList.remove('upgraded');
         }, 500);
+        
+        return true;
+    }
+    
+    // 从槽位移除子弹
+    removeBulletFromSlot(slotIndex) {
+        // 获取槽位
+        const slot = this.bulletSlotManager.getSlot(slotIndex);
+        if (!slot) {
+            console.log(`槽位 ${slotIndex} 不存在`);
+            return false;
+        }
+        
+        // 清空槽位
+        slot.clear();
         
         return true;
     }
@@ -354,6 +280,9 @@ class Tower {
             this.rangeIndicator.parentNode.removeChild(this.rangeIndicator);
         }
         
+        // 移除子弹槽管理器
+        this.bulletSlotManager.remove();
+        
         // 移除DOM元素
         if (this.element.parentNode) {
             this.element.parentNode.removeChild(this.element);
@@ -371,6 +300,9 @@ class Tower {
         if (this.rangeIndicator && this.rangeIndicator.parentNode) {
             this.rangeIndicator.parentNode.removeChild(this.rangeIndicator);
         }
+        
+        // 移除子弹槽管理器
+        this.bulletSlotManager.remove();
         
         // 移除DOM元素
         if (this.element.parentNode) {

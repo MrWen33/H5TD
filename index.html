@@ -6,6 +6,9 @@
     <title>emoji塔防游戏</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/tower-menu-fix.css">
+    <link rel="stylesheet" href="css/projectiles.css">
+    <link rel="stylesheet" href="css/bullet-slots.css">
+    <link rel="stylesheet" href="css/bullet-tooltip.css">
 </head>
 <body>
     <div class="game-container">
@@ -49,14 +52,7 @@
             <div class="tower-option" data-tower="archer">
                 <div class="tower-icon">🏹</div>
                 <div class="tower-cost"></div>
-            </div>
-            <div class="tower-option" data-tower="magic">
-                <div class="tower-icon">🧙</div>
-                <div class="tower-cost"></div>
-            </div>
-            <div class="tower-option" data-tower="cannon">
-                <div class="tower-icon">💣</div>
-                <div class="tower-cost"></div>
+                <div class="tower-name">塔防塔</div>
             </div>
         </div>
         
@@ -87,10 +83,35 @@
     
     <!-- 核心文件 -->
     <script src="js/core/config.js"></script>
+    <script src="js/config/bulletConfig.js"></script>
+    
+    <!-- 子弹提示框UI -->
+    <script src="js/ui/BulletTooltipUI.js"></script>
+    <script src="js/ui/ArcherBulletTooltipUI.js"></script>
+    <script src="js/ui/FireBulletTooltipUI.js"></script>
+    <script src="js/ui/IceBulletTooltipUI.js"></script>
+    <script src="js/ui/PoisonBulletTooltipUI.js"></script>
+    <script src="js/ui/MagicBulletTooltipUI.js"></script>
+    <script src="js/ui/CannonBulletTooltipUI.js"></script>
+    <script src="js/ui/BulletTooltipFactory.js"></script>
     
     <!-- 实体类 -->
     <script src="js/entities/enemy.js"></script>
+    <script src="js/entities/projectiles/Projectile.js"></script>
+    <script src="js/entities/projectiles/ArcherProjectile.js"></script>
+    <script src="js/entities/projectiles/MagicProjectile.js"></script>
+    <script src="js/entities/projectiles/CannonProjectile.js"></script>
+    <script src="js/entities/projectiles/FireProjectile.js"></script>
+    <script src="js/entities/projectiles/IceProjectile.js"></script>
+    <script src="js/entities/projectiles/PoisonProjectile.js"></script>
+    <script src="js/entities/BulletSlot.js"></script>
     <script src="js/entities/tower.js"></script>
+    
+    <!-- 效果系统 -->
+    <script src="js/effects/Effect.js"></script>
+    <script src="js/effects/BurnEffect.js"></script>
+    <script src="js/effects/FreezeEffect.js"></script>
+    <script src="js/effects/PoisonEffect.js"></script>
     
     <!-- 管理器 -->
     <script src="js/managers/mapManager.js"></script>
@@ -98,6 +119,10 @@
     <script src="js/managers/towerManager.js"></script>
     <script src="js/managers/waveManager.js"></script>
     <script src="js/managers/uiManager.js"></script>
+    <script src="js/managers/effectManager.js"></script>
+    <script src="js/managers/projectileManager.js"></script>
+    <script src="js/managers/bulletManager.js"></script>
+    <script src="js/managers/bulletSlotManager.js"></script>
     
     <!-- 游戏主文件 -->
     <script src="js/game.js"></script>

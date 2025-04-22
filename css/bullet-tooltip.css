@@ -1,0 +1,89 @@
+/**
+ * 子弹详细信息提示框样式
+ */
+
+/* 子弹提示框容器 */
+.bullet-tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    padding: 10px;
+    width: 200px;
+    color: white;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.bullet-tooltip.visible {
+    opacity: 1;
+}
+
+/* 子弹提示框标题 */
+.bullet-tooltip-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 5px;
+}
+
+.bullet-tooltip-icon {
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.bullet-tooltip-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* 子弹提示框属性 */
+.bullet-tooltip-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bullet-tooltip-stat {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bullet-tooltip-stat-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.bullet-tooltip-stat-value {
+    font-weight: bold;
+}
+
+/* 子弹提示框描述 */
+.bullet-tooltip-description {
+    margin-top: 8px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+}
+
+/* 特殊属性颜色 */
+.stat-damage {
+    color: #F44336;
+}
+
+.stat-cooldown {
+    color: #2196F3;
+}
+
+.stat-cost {
+    color: #FFD700;
+}
+
+.stat-effect {
+    color: #4CAF50;
+}

@@ -112,51 +112,12 @@ const Config = {
         archer: { 
             id: 'archer',
             emoji: '🏹', 
-            name: '弓箭手', 
-            damage: 20,           // 伤害
+            name: '塔防塔', 
             range: 120,           // 攻击范围（像素）
             attackSpeed: 1.0,     // 攻击速度（次/秒）
-            cost: 50,             // 建造成本
-            projectile: 'archer-projectile', // 投射物类型
+            cost: 25,             // 建造成本
             projectileSpeed: 300, // 投射物速度（像素/秒）
-            upgradeLevel: 0,      // 初始升级等级
-            upgrades: [
-                { damage: 20, range: 130, attackSpeed: 1.5, cost: 30 },
-                { damage: 40, range: 140, attackSpeed: 1.5, cost: 50 }
-            ]
-        },
-        magic: { 
-            id: 'magic',
-            emoji: '🧙', 
-            name: '法师', 
-            damage: 40, 
-            range: 100, 
-            attackSpeed: 0.5, 
-            cost: 150, 
-            projectile: 'magic-projectile',
-            projectileSpeed: 250,
-            upgradeLevel: 0,
-            upgrades: [
-                { damage: 60, range: 110, attackSpeed: 0.5, cost: 60 },
-                { damage: 60, range: 120, attackSpeed: 1.0, cost: 100 }
-            ]
-        },
-        cannon: { 
-            id: 'cannon',
-            emoji: '💣', 
-            name: '炮手', 
-            damage: 60, 
-            range: 80, 
-            attackSpeed: 0.3, 
-            cost: 250, 
-            projectile: 'cannon-projectile',
-            projectileSpeed: 200,
-            splashRadius: 40,     // 溅射范围（像素）
-            upgradeLevel: 0,
-            upgrades: [
-                { damage: 90, range: 90, attackSpeed: 0.3, splashRadius: 60, cost: 90 },
-                { damage: 135, range: 100, attackSpeed: 0.5, splashRadius: 60, cost: 150 }
-            ]
+            slotCount: 4          // 子弹槽数量
         }
     },
     
