@@ -1,8 +1,114 @@
 /* 塔升级菜单修复样式 */
 .tower-upgrade-menu {
-    width: 200px !important;
+    /* 增加升级框的宽度 */
+    width: 240px !important;
     padding: 12px !important;
     font-family: 'Microsoft YaHei', sans-serif !important;
+}
+
+/* 当菜单显示在塔下方时的样式 */
+.menu-below {
+    /* 调整关闭按钮位置，确保始终可见 */
+    padding-top: 20px; /* 增加顶部内边距，为关闭按钮留出空间 */
+}
+
+.menu-below .close-button {
+    top: 5px; /* 保持在顶部 */
+    right: 5px; /* 保持在右侧 */
+}
+
+/* 按钮区域样式 */
+.tower-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.button-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 5px;
+}
+
+.left-area {
+    justify-content: flex-start;
+}
+
+.right-area {
+    justify-content: flex-end;
+}
+
+/* 覆盖按钮样式 */
+.upgrade-button, .sell-button {
+    padding: 6px 12px !important;
+    font-size: 0.9rem !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: 110px !important;
+    margin: 0 3px !important;
+}
+
+/* 最高级占位元素样式 */
+.button-placeholder {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 2px;
+    max-width: 80px;
+    color: #FFC107;
+    text-align: center;
+    background-color: rgba(255, 193, 7, 0.2);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+/* 覆盖塔属性容器样式，改为单列布局 */
+.tower-stats {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* 改为单列 */
+    gap: 6px !important;
+    font-size: 0.9rem !important;
+    width: 100% !important;
+    overflow: visible !important; /* 允许内容溢出显示 */
+}
+
+/* 属性项样式 */
+.stat-item {
+    margin: 4px 0;
+    white-space: nowrap;
+    overflow: visible; /* 允许文字完整显示 */
+    line-height: 1.4;
+    font-size: 0.9rem;
+}
+
+/* 当前属性值样式 */
+.current-stat {
+    color: #ffffff;
+    font-weight: normal;
+}
+
+/* 升级后属性值样式 */
+.upgraded-stat {
+    color: #4CAF50; /* 绿色，表示提升 */
+    font-weight: bold;
+}
+
+/* 属性值下降时的样式 */
+.downgraded-stat {
+    color: #F44336; /* 红色，表示下降 */
+    font-weight: bold;
+}
+
+/* 属性变化箭头样式 */
+.stat-arrow {
+    color: #FFC107; /* 黄色箭头 */
+    margin: 0 3px;
+    font-weight: bold;
 }
 
 .tower-name {

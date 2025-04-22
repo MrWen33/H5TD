@@ -40,6 +40,9 @@ const UIManager = {
         // 添加事件监听器
         this.addEventListeners();
         
+        // 初始化塔选项价格
+        this.initTowerOptions();
+        
         // 初始化UI
         this.updateResourceDisplay();
         this.updateWaveDisplay();
@@ -168,8 +171,26 @@ const UIManager = {
         // 创建升级菜单容器
         const menuContainer = document.createElement('div');
         menuContainer.className = 'tower-upgrade-menu';
-        menuContainer.style.left = `${tower.x * Config.map.cellSize}px`;
-        menuContainer.style.top = `${tower.y * Config.map.cellSize - 80}px`;
+        
+        // 计算菜单的水平位置
+        const menuLeft = tower.x * Config.map.cellSize;
+        menuContainer.style.left = `${menuLeft}px`;
+        
+        // 智能计算菜单的垂直位置
+        // 如果塔在画面上方，将菜单显示在塔的下方
+        const towerY = tower.y * Config.map.cellSize;
+        const mapHeight = Config.map.height * Config.map.cellSize;
+        
+        // 判断塔是否在地图的上半部分
+        if (towerY < mapHeight / 3) {
+            // 塔在上方，菜单显示在塔的下方
+            menuContainer.style.top = `${towerY + Config.map.cellSize + 10}px`;
+            menuContainer.classList.add('menu-below');
+        } else {
+            // 塔在中间或下方，菜单显示在塔的上方
+            menuContainer.style.top = `${towerY - 80}px`;
+            menuContainer.classList.remove('menu-below');
+        }
         
         // 创建塔信息
         const towerInfo = document.createElement('div');
@@ -185,22 +206,46 @@ const UIManager = {
         const towerStats = document.createElement('div');
         towerStats.className = 'tower-stats';
         
-        // 添加各个属性
+        // 检查是否有可用的升级
+        const hasUpgrade = tower.upgradeLevel < tower.upgrades.length;
+        const nextUpgrade = hasUpgrade ? tower.upgrades[tower.upgradeLevel] : null;
+        
+        // 添加各个属性，并显示升级后的变化
         const damageDiv = document.createElement('div');
-        damageDiv.textContent = `伤害: ${tower.damage}`;
+        damageDiv.className = 'stat-item';
+        if (hasUpgrade && nextUpgrade.damage !== tower.damage) {
+            damageDiv.innerHTML = `伤害: <span class="current-stat">${tower.damage}</span> <span class="stat-arrow">→</span> <span class="upgraded-stat">${nextUpgrade.damage}</span>`;
+        } else {
+            damageDiv.textContent = `伤害: ${tower.damage}`;
+        }
         towerStats.appendChild(damageDiv);
         
         const rangeDiv = document.createElement('div');
-        rangeDiv.textContent = `范围: ${tower.range}`;
+        rangeDiv.className = 'stat-item';
+        if (hasUpgrade && nextUpgrade.range !== tower.range) {
+            rangeDiv.innerHTML = `范围: <span class="current-stat">${tower.range}</span> <span class="stat-arrow">→</span> <span class="upgraded-stat">${nextUpgrade.range}</span>`;
+        } else {
+            rangeDiv.textContent = `范围: ${tower.range}`;
+        }
         towerStats.appendChild(rangeDiv);
         
         const speedDiv = document.createElement('div');
-        speedDiv.textContent = `攻速: ${tower.attackSpeed.toFixed(1)}`;
+        speedDiv.className = 'stat-item';
+        if (hasUpgrade && nextUpgrade.attackSpeed !== tower.attackSpeed) {
+            speedDiv.innerHTML = `攻速: <span class="current-stat">${tower.attackSpeed.toFixed(1)}</span> <span class="stat-arrow">→</span> <span class="upgraded-stat">${nextUpgrade.attackSpeed.toFixed(1)}</span>`;
+        } else {
+            speedDiv.textContent = `攻速: ${tower.attackSpeed.toFixed(1)}`;
+        }
         towerStats.appendChild(speedDiv);
         
-        if (tower.splashRadius) {
+        if (tower.splashRadius || (hasUpgrade && nextUpgrade.splashRadius)) {
             const splashDiv = document.createElement('div');
-            splashDiv.textContent = `泼射: ${tower.splashRadius}`;
+            splashDiv.className = 'stat-item';
+            if (hasUpgrade && nextUpgrade.splashRadius && nextUpgrade.splashRadius !== tower.splashRadius) {
+                splashDiv.innerHTML = `泼射: <span class="current-stat">${tower.splashRadius || 0}</span> <span class="stat-arrow">→</span> <span class="upgraded-stat">${nextUpgrade.splashRadius}</span>`;
+            } else {
+                splashDiv.textContent = `泼射: ${tower.splashRadius || 0}`;
+            }
             towerStats.appendChild(splashDiv);
         }
         
@@ -211,7 +256,17 @@ const UIManager = {
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'tower-buttons';
         
-        // 创建升级按钮
+        // 创建左右两个按钮区域，确保出售按钮始终在右侧
+        const leftButtonArea = document.createElement('div');
+        leftButtonArea.className = 'button-area left-area';
+        
+        const rightButtonArea = document.createElement('div');
+        rightButtonArea.className = 'button-area right-area';
+        
+        buttonContainer.appendChild(leftButtonArea);
+        buttonContainer.appendChild(rightButtonArea);
+        
+        // 创建升级按钮，始终放在左侧区域
         if (tower.upgradeLevel < tower.upgrades.length) {
             const upgrade = tower.upgrades[tower.upgradeLevel];
             const upgradeButton = document.createElement('button');
@@ -234,13 +289,19 @@ const UIManager = {
                 }
             });
             
-            buttonContainer.appendChild(upgradeButton);
+            leftButtonArea.appendChild(upgradeButton);
+        } else {
+            // 即使没有升级按钮，也添加一个占位元素，保持布局一致
+            const placeholderDiv = document.createElement('div');
+            placeholderDiv.className = 'button-placeholder';
+            placeholderDiv.textContent = `最高级`;
+            leftButtonArea.appendChild(placeholderDiv);
         }
         
-        // 创建出售按钮
+        // 创建出售按钮，始终放在右侧区域
         const sellButton = document.createElement('button');
         sellButton.className = 'sell-button';
-        sellButton.textContent = `出售 (${Math.floor(tower.cost * 0.5)}💰)`;
+        sellButton.textContent = `出售 (${Math.floor(tower.totalInvestment * Config.sellPriceFactor)}💰)`;
         
         // 添加点击事件
         sellButton.addEventListener('click', () => {
@@ -256,7 +317,7 @@ const UIManager = {
             this.showMessage(`塔已出售，获得 ${sellPrice}💰`);
         });
         
-        buttonContainer.appendChild(sellButton);
+        rightButtonArea.appendChild(sellButton);
         menuContainer.appendChild(buttonContainer);
         
         // 添加关闭按钮
@@ -299,5 +360,26 @@ const UIManager = {
         
         this.updateResourceDisplay();
         this.updateWaveDisplay();
+    },
+    
+    // 初始化塔选项价格
+    initTowerOptions() {
+        // 获取所有塔选项
+        const towerOptions = document.querySelectorAll('.tower-option');
+        
+        // 为每个塔选项设置价格
+        towerOptions.forEach(option => {
+            const towerType = option.getAttribute('data-tower');
+            const towerConfig = Config.towerTypes[towerType];
+            
+            if (towerConfig) {
+                // 设置真实价格
+                const costElement = option.querySelector('.tower-cost');
+                costElement.textContent = `${towerConfig.cost}💰`;
+                
+                // 设置 data-cost 属性
+                option.setAttribute('data-cost', towerConfig.cost);
+            }
+        });
     }
 };

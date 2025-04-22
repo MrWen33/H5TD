@@ -22,6 +22,9 @@ class Tower {
         this.upgradeLevel = type.upgradeLevel || 0;
         this.upgrades = type.upgrades || [];
         
+        // 记录总投资金额（初始建造成本）
+        this.totalInvestment = type.cost;
+        
         // 位置
         this.x = x;
         this.y = y;
@@ -298,6 +301,9 @@ class Tower {
         // 扣除金钱
         Game.state.money -= upgrade.cost;
         
+        // 更新总投资金额
+        this.totalInvestment += upgrade.cost;
+        
         // 应用升级
         this.damage = upgrade.damage;
         this.range = upgrade.range;
@@ -334,8 +340,8 @@ class Tower {
     
     // 出售塔
     sell() {
-        // 计算出售价格（50%的建造成本）
-        const sellPrice = Math.floor(this.cost * 0.5);
+        // 计算出售价格（基于总投资金额，使用配置的出售价格系数）
+        const sellPrice = Math.floor(this.totalInvestment * Config.sellPriceFactor);
         
         // 添加金钱
         Game.state.money += sellPrice;

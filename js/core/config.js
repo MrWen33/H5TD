@@ -31,7 +31,7 @@ const Config = {
             speed: 0.6,     // 移动速度（格子/秒）
             health: 100,    // 生命值
             damage: 1,      // 对基地造成的伤害
-            reward: 10,     // 击杀奖励
+            reward: 7,     // 击杀奖励
             scale: 1.0      // 大小缩放
         },
         { 
@@ -41,7 +41,7 @@ const Config = {
             speed: 0.5, 
             health: 220, 
             damage: 1,
-            reward: 15,
+            reward: 10,
             scale: 1.1
         },
         { 
@@ -51,7 +51,7 @@ const Config = {
             speed: 0.7, 
             health: 150, 
             damage: 1,
-            reward: 12,
+            reward: 8,
             scale: 0.9
         },
         { 
@@ -61,7 +61,7 @@ const Config = {
             speed: 0.95, 
             health: 120, 
             damage: 1,
-            reward: 15,
+            reward: 10,
             scale: 0.8
         },
         { 
@@ -71,7 +71,7 @@ const Config = {
             speed: 0.85, 
             health: 250, 
             damage: 2,
-            reward: 25,
+            reward: 15,
             scale: 1.0
         },
         { 
@@ -81,7 +81,7 @@ const Config = {
             speed: 0.7, 
             health: 400, 
             damage: 3,
-            reward: 35,
+            reward: 15,
             scale: 1.2
         },
         { 
@@ -91,7 +91,7 @@ const Config = {
             speed: 0.9, 
             health: 350, 
             damage: 4,
-            reward: 40,
+            reward: 20,
             scale: 1.1
         },
         { 
@@ -101,7 +101,7 @@ const Config = {
             speed: 0.6, 
             health: 800, 
             damage: 6,
-            reward: 80,
+            reward: 25,
             scale: 1.3,
             boss: true
         }
@@ -121,8 +121,8 @@ const Config = {
             projectileSpeed: 300, // 投射物速度（像素/秒）
             upgradeLevel: 0,      // 初始升级等级
             upgrades: [
-                { damage: 30, range: 130, attackSpeed: 1.1, cost: 30 },
-                { damage: 45, range: 140, attackSpeed: 1.2, cost: 50 }
+                { damage: 20, range: 130, attackSpeed: 1.5, cost: 30 },
+                { damage: 40, range: 140, attackSpeed: 1.5, cost: 50 }
             ]
         },
         magic: { 
@@ -131,14 +131,14 @@ const Config = {
             name: '法师', 
             damage: 40, 
             range: 100, 
-            attackSpeed: 0.7, 
-            cost: 100, 
+            attackSpeed: 0.5, 
+            cost: 150, 
             projectile: 'magic-projectile',
             projectileSpeed: 250,
             upgradeLevel: 0,
             upgrades: [
-                { damage: 60, range: 110, attackSpeed: 0.8, cost: 60 },
-                { damage: 90, range: 120, attackSpeed: 0.9, cost: 100 }
+                { damage: 60, range: 110, attackSpeed: 0.5, cost: 60 },
+                { damage: 60, range: 120, attackSpeed: 1.0, cost: 100 }
             ]
         },
         cannon: { 
@@ -147,18 +147,21 @@ const Config = {
             name: '炮手', 
             damage: 60, 
             range: 80, 
-            attackSpeed: 0.5, 
-            cost: 150, 
+            attackSpeed: 0.3, 
+            cost: 250, 
             projectile: 'cannon-projectile',
             projectileSpeed: 200,
             splashRadius: 40,     // 溅射范围（像素）
             upgradeLevel: 0,
             upgrades: [
-                { damage: 90, range: 90, attackSpeed: 0.6, splashRadius: 50, cost: 90 },
-                { damage: 135, range: 100, attackSpeed: 0.7, splashRadius: 60, cost: 150 }
+                { damage: 90, range: 90, attackSpeed: 0.3, splashRadius: 60, cost: 90 },
+                { damage: 135, range: 100, attackSpeed: 0.5, splashRadius: 60, cost: 150 }
             ]
         }
     },
+    
+    // 塔出售价格系数（出售价格 = 建造成本 * 系数）
+    sellPriceFactor: 0.5,
     
     // 波次配置
     waves: [
