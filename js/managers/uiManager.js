@@ -610,7 +610,7 @@ const UIManager = {
             // 子弹成本
             const bulletCost = document.createElement('div');
             bulletCost.className = 'bullet-option-cost';
-            bulletCost.textContent = bulletType.cost;
+            bulletCost.textContent = `${bulletType.cost}💰`;
             bulletOption.appendChild(bulletCost);
             
             // 添加鼠标悬停事件，显示子弹详细信息

@@ -331,32 +331,7 @@ class Enemy {
         }
     }
     
-    /**
-     * 更新敌人的视觉效果（基于当前效果）
-     * @deprecated 使用 effectManager.updateTargetVisualEffects 代替
-     */
-    updateVisualEffects() {
-        effectManager.updateTargetVisualEffects(this);
-    }
-    
-    /**
-     * 显示效果图标
-     * @param {string} effectType - 效果类型
-     * @deprecated 效果类现在自己处理图标显示
-     */
-    showEffectIcon(effectType) {
-        // 这个方法保留仅为了兼容性，不再使用
-    }
-    
-    /**
-     * 显示效果文本（如伤害数字）
-     * @param {number} value - 显示的数值
-     * @param {string} effectType - 效果类型
-     * @deprecated 效果类现在自己处理文本显示
-     */
-    showEffectText(value, effectType) {
-        // 这个方法保留仅为了兼容性，不再使用
-    }
+
     
     /**
      * 减速敌人 (兼容旧的减速系统)

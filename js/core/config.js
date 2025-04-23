@@ -117,7 +117,8 @@ const Config = {
             attackSpeed: 1.0,     // 攻击速度（次/秒）
             cost: 25,             // 建造成本
             projectileSpeed: 300, // 投射物速度（像素/秒）
-            slotCount: 4          // 子弹槽数量
+            slotCount: 4,         // 子弹槽数量
+            reloadTime: 0.8       // 重新装填时间（秒)
         }
     },
     
@@ -127,7 +128,7 @@ const Config = {
     // 波次配置
     waves: [
         // 第1波 - 简单入门
-        { enemies: ['snail', 'snail', 'snail', 'snail', 'snail'], interval: 1.5 },
+        { enemies: ['snail', 'snail', 'snail'], interval: 1.5 },
         
         // 第2波 - 引入新敌人
         { enemies: ['snail', 'snail', 'turtle', 'snail', 'snail', 'turtle', 'snail'], interval: 1.3 },

@@ -57,12 +57,26 @@ class Tower {
         this.bulletSlotManager.initializeSlots(slotCount);
         this.bulletSlotManager.setVisible(false); // 初始时隐藏子弹槽显示
         
+        // 初始化编译空的子弹槽
+        this.compileBulletSlots();
+        
+        // 重新装填相关
+        this.isReloading = false;    // 是否正在重新装填
+        this.reloadTimeRemaining = 0; // 剩余装填时间
+        this.reloadTime = this.type.reloadTime || 2.0; // 装填时间（秒）
+        
+        // 创建重新装填指示器
+        this.reloadIndicator = new ReloadIndicator(this);
+        
         // 显示范围指示器
         this.showRangeIndicator();
     }
     
     // 更新塔
     update(deltaTime) {
+        // 更新洗牌状态
+        this.updateReloading(deltaTime);
+        
         // 如果冷却中，减少冷却时间
         if (this.attackCooldown > 0) {
             this.attackCooldown -= deltaTime;
@@ -82,7 +96,7 @@ class Tower {
                 this.target = null;
                 this.findTarget();
             } else if (this.attackCooldown <= 0) {
-                // 攻击目标
+                // 攻击目标（即使在洗牌中也会尝试攻击，但如果正在洗牌，drawCard会返回null）
                 this.attack();
             }
         }
@@ -131,21 +145,24 @@ class Tower {
             return;
         }
         
-        // 获取下一个要发射的子弹槽
-        const nextSlot = this.bulletSlotManager.getNextSlot();
-        
-        // 如果没有可用的子弹槽，不发射
-        if (!nextSlot) {
+        // 如果正在洗牌（重新装填），不能发射
+        if (this.bulletSlotManager.isShuffling) {
+            console.log(`塔 ${this.id} 正在洗牌，无法发射子弹`);
             return;
         }
         
-        // 获取子弹选项
-        const bulletOptions = nextSlot.getBulletOptions();
+        // 从抽卡堆中抽一张卡牌（子弹）
+        const bulletOptions = this.bulletSlotManager.drawCard();
+        
+        // 如果没有可用的卡牌，不发射
+        if (!bulletOptions) {
+            console.log(`塔 ${this.id} 没有可用的卡牌`);
+            return;
+        }
         
         // 设置子弹速度
         bulletOptions.speed = this.projectileSpeed;
         
-       
         // 使用子弹管理器创建子弹
         const projectile = projectileManager.createProjectile(
             bulletOptions.type,
@@ -154,10 +171,13 @@ class Tower {
             bulletOptions
         );
 
-         // 在发射子弹后设置塔的冷却时间
+        // 在发射子弹后设置塔的冷却时间
         const cooldown = projectile.cooldown;
         this.attackCooldown = cooldown;
-        console.log(`发射子弹，设置塔的冷却时间为 ${cooldown} 秒`);
+        console.log(`发射卡牌: ${bulletOptions.type}，设置塔的冷却时间为 ${cooldown} 秒`);
+        
+        // 将使用过的卡牌放入弃牌堆
+        this.bulletSlotManager.discardCard(bulletOptions);
     }
     
     // 造成溅射伤害 - 这个方法现在已经被移到CannonProjectile类中，保留此方法仅为了兼容性
@@ -200,6 +220,44 @@ class Tower {
         }
     }
     
+
+    
+    /**
+     * 编译子弹槽
+     * 将子弹槽编译成卡牌并放入抽卡堆
+     */
+    compileBulletSlots() {
+        // 调用子弹槽管理器的编译方法
+        const drawPile = this.bulletSlotManager.compileBulletSlots();
+        console.log(`塔 ${this.id} 编译完成，卡牌数量: ${drawPile.length}`);
+        return drawPile;
+    }
+    
+
+    
+    /**
+     * 更新重新装填状态
+     * 在卡牌系统中，这个方法用于更新洗牌状态
+     * @param {number} deltaTime - 时间增量（秒）
+     */
+    updateReloading(deltaTime) {
+        // 更新卡牌系统的洗牌状态
+        this.bulletSlotManager.updateShuffling(deltaTime);
+        
+        // 如果正在洗牌，更新进度条
+        if (this.bulletSlotManager.isShuffling) {
+            const progress = 100 * (1 - this.bulletSlotManager.shuffleTime / this.reloadTime);
+            this.reloadIndicator.updateProgress(progress);
+            this.reloadIndicator.show();
+        } else {
+            this.reloadIndicator.hide();
+        }
+    }
+    
+
+    
+
+    
     // 显示子弹槽菜单
     showBulletSlotsMenu() {
         // 隐藏其他塔的范围
@@ -237,14 +295,14 @@ class Tower {
         // 更新总投资金额
         this.totalInvestment += bulletCost;
         
-        // 设置子弹
+        // 设置子弹类型
         slot.setBulletType(bulletType, bulletOptions);
         
-        // 添加效果
-        this.element.classList.add('upgraded');
-        setTimeout(() => {
-            this.element.classList.remove('upgraded');
-        }, 500);
+        // 编译子弹槽
+        this.compileBulletSlots();
+        
+        // 更新UI
+        UIManager.updateResourceDisplay();
         
         return true;
     }
@@ -260,6 +318,9 @@ class Tower {
         
         // 清空槽位
         slot.clear();
+        
+        // 重新编译子弹槽
+        this.compileBulletSlots();
         
         return true;
     }
@@ -281,21 +342,17 @@ class Tower {
         }
         
         // 移除子弹槽管理器
-        this.bulletSlotManager.remove();
-        
-        // 移除DOM元素
-        if (this.element.parentNode) {
-            this.element.parentNode.removeChild(this.element);
-        }
-        
-        // 从塔管理器中移除
-        TowerManager.removeTower(this);
         
         return sellPrice;
     }
     
     // 移除塔
     remove() {
+        // 移除DOM元素
+        if (this.element && this.element.parentNode) {
+            this.element.parentNode.removeChild(this.element);
+        }
+        
         // 移除范围指示器
         if (this.rangeIndicator && this.rangeIndicator.parentNode) {
             this.rangeIndicator.parentNode.removeChild(this.rangeIndicator);
@@ -304,9 +361,12 @@ class Tower {
         // 移除子弹槽管理器
         this.bulletSlotManager.remove();
         
-        // 移除DOM元素
-        if (this.element.parentNode) {
-            this.element.parentNode.removeChild(this.element);
+        // 移除重新装填指示器
+        if (this.reloadIndicator) {
+            this.reloadIndicator.destroy();
         }
+        
+        // 从塔管理器中移除
+        TowerManager.removeTower(this);
     }
 }
